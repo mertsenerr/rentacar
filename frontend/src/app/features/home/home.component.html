@@ -1,0 +1,219 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-background">
+    <video 
+      autoplay 
+      loop 
+      muted 
+      playsinline
+      poster="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920"
+    >
+      <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69a27dbc4ff2b87d38afc35f1a9e7c02d&profile_id=164&oauth2_token_id=57447761" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+  </div>
+  
+  <div class="hero-content">
+    <div class="hero-tagline animate-fade-in">
+      <span class="tagline-line"></span>
+      <span class="tagline-text">Luxury Fleet Services</span>
+      <span class="tagline-line"></span>
+    </div>
+    
+    <h1 class="hero-title animate-fade-in-up delay-2">
+      Experience<br>
+      <span class="text-gradient">Extraordinary</span>
+    </h1>
+    
+    <p class="hero-subtitle animate-fade-in-up delay-3">
+      The world's finest automobiles, delivered with uncompromising service.
+    </p>
+    
+    <div class="hero-actions animate-fade-in-up delay-4">
+      <a routerLink="/collection" class="btn btn-primary">
+        Explore Collection
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </a>
+      <a routerLink="/booking" class="btn btn-outline">
+        Book Now
+      </a>
+    </div>
+  </div>
+  
+  <div class="hero-scroll-indicator">
+    <span>Scroll to discover</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number">50+</span>
+        <span class="stat-label">Luxury Vehicles</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">15K+</span>
+        <span class="stat-label">Happy Clients</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">24/7</span>
+        <span class="stat-label">Concierge Service</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Satisfaction Rate</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Collection Section -->
+<section class="featured-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tagline">Curated Selection</span>
+      <h2 class="section-title">Featured Collection</h2>
+      <p class="section-subtitle">
+        Handpicked excellence from the world's most prestigious automotive houses.
+      </p>
+    </div>
+    
+    <div class="featured-grid">
+      @for (vehicle of featuredVehicles(); track vehicle.id) {
+        <app-vehicle-card 
+          [vehicle]="vehicle"
+          [showCompare]="false"
+          (viewDetails)="openModal($event)"
+        />
+      }
+    </div>
+
+    <!-- ✅ Modal - selectedVehicle dolunca açılır -->
+    @if (selectedVehicle(); as vehicle) {
+      <app-vehicle-detail-modal
+        [vehicle]="vehicle"
+        (close)="closeModal()"
+      />
+    }
+    
+    <div class="section-cta">
+      <a routerLink="/collection" class="btn btn-outline">
+        View Full Collection
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Services Preview Section -->
+<section class="services-preview">
+  <div class="services-background">
+    <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80&w=1920" alt="">
+    <div class="services-overlay"></div>
+  </div>
+  
+  <div class="container">
+    <div class="services-content">
+      <span class="section-tagline">Premium Services</span>
+      <h2 class="section-title">Beyond Transportation</h2>
+      <p class="services-description">
+        From professional chauffeur services to bespoke event solutions, 
+        we deliver experiences that transcend the ordinary.
+      </p>
+      
+      <div class="services-features">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4>Professional Chauffeurs</h4>
+          <p>Discrete, experienced drivers committed to your comfort and safety.</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M3 9H21M9 21V9" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h4>Corporate Solutions</h4>
+          <p>Tailored fleet management for businesses that demand excellence.</p>
+        </div>
+        
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h4>Special Events</h4>
+          <p>Make your milestone moments truly unforgettable.</p>
+        </div>
+      </div>
+      
+      <a routerLink="/services" class="btn btn-primary">
+        Explore Services
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial Section -->
+<section class="testimonial-section">
+  <div class="container">
+    <div class="testimonial-content">
+      <svg class="quote-icon" viewBox="0 0 24 24" fill="none">
+        <path d="M3 21C3 21 4.5 17 4.5 14C4.5 11 3 10 3 10C3 10 6 10 6 7C6 4 3 3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M13 21C13 21 14.5 17 14.5 14C14.5 11 13 10 13 10C13 10 16 10 16 7C16 4 13 3 13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      
+      <blockquote class="testimonial-quote">
+        The level of service and attention to detail is unmatched. Corporate Elite 
+        has redefined what luxury transportation means to us.
+      </blockquote>
+      
+      <div class="testimonial-author">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" alt="James Wellington">
+        <div>
+          <span class="author-name">James Wellington</span>
+          <span class="author-title">CEO, Sterling Holdings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-background">
+    <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1920" alt="">
+    <div class="cta-overlay"></div>
+  </div>
+  
+  <div class="container">
+    <div class="cta-content">
+      <span class="section-tagline">Ready to Experience Excellence?</span>
+      <h2 class="cta-title">Begin Your Journey</h2>
+      <p class="cta-subtitle">
+        Reserve your luxury vehicle today and discover a new standard of travel.
+      </p>
+      <a routerLink="/booking" class="btn btn-primary btn-large">
+        Book Your Experience
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
