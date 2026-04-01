@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CORPORATE ELITE - .NET CORE 9 API
-// Clean Architecture Web API Entry Point - CORS FIXED
+// Clean Architecture Web API Entry Point
 // ═══════════════════════════════════════════════════════════════════════════════
 
 using CorporateElite.API.Configuration;
@@ -34,15 +34,9 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
-// Authentication
-Console.WriteLine("=== CONFIG DEBUG ===");
-Console.WriteLine($"Secret: '{builder.Configuration["JwtSettings:Secret"]}'");
-Console.WriteLine($"Issuer: '{builder.Configuration["JwtSettings:Issuer"]}'");
-Console.WriteLine($"Audience: '{builder.Configuration["JwtSettings:Audience"]}'");
-Console.WriteLine("===================");
-
+// JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>()
-    ?? throw new InvalidOperationException("JwtSettings is NULL! Check appsettings.json.");
+    ?? throw new InvalidOperationException("JwtSettings is NULL!");
 
 if (string.IsNullOrEmpty(jwtSettings.Secret))
     throw new InvalidOperationException("JWT Secret cannot be null or empty!");
@@ -65,17 +59,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// CORS - CRITICAL FIX
-// ═══════════════════════════════════════════════════════════════════════════════
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://renttacar.netlify.app")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -106,38 +97,23 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// MIDDLEWARE PIPELINE - ORDER IS CRITICAL!
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// 1. CORS must be BEFORE Authentication/Authorization
+// MIDDLEWARE PIPELINE
 app.UseCors("AllowAngular");
 
-// 2. Swagger
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Corporate Elite API V1");
-    c.RoutePrefix = string.Empty; // Swagger UI at root
+    c.RoutePrefix = string.Empty;
 });
 
-// 3. HTTPS Redirection only in Production
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// 4. Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
-// 5. Controllers
 app.MapControllers();
-
-Console.WriteLine("🚀 Corporate Elite API is running!");
-Console.WriteLine($"📍 Environment: {app.Environment.EnvironmentName}");
-Console.WriteLine($"🌐 Swagger UI: http://localhost:5000/");
-Console.WriteLine($"🔧 API Health: http://localhost:5000/api/health");
-Console.WriteLine($"🚗 Vehicles: http://localhost:5000/api/vehicles");
 
 app.Run();
