@@ -72,11 +72,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials()
-              .SetIsOriginAllowed(_ => true); // Allow any origin for development
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://renttacar.netlify.app")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .SetIsOriginAllowed(_ => true); // Allow any origin for development
     });
 });
 
