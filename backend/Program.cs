@@ -75,8 +75,7 @@ builder.Services.AddCors(options =>
             policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://renttacar.netlify.app")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials()
-            .SetIsOriginAllowed(_ => true); // Allow any origin for development
+            .AllowCredentials();
     });
 });
 
