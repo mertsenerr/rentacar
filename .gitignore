@@ -14,8 +14,6 @@
 *.env.production
 *.env.staging
 .env.*.local
-environment.ts
-environment.development.ts
 
 # API Keys & Secrets
 appsettings.json
