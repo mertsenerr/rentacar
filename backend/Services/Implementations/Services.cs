@@ -164,6 +164,56 @@ public class AuthService : IAuthService
         return GenerateAuthResponse(user);
     }
 
+    public async Task<AuthResponse?> GoogleLoginAsync(GoogleLoginRequest request)
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", request.IdToken);
+            
+            var response = await httpClient.GetStringAsync(
+                "https://www.googleapis.com/oauth2/v3/userinfo");
+            
+            var userInfo = System.Text.Json.JsonSerializer.Deserialize<GoogleTokenPayload>(response,
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            
+            if (userInfo == null || string.IsNullOrEmpty(userInfo.Email)) 
+                return null;
+
+            var user = await _userRepo.GetByEmailAsync(userInfo.Email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = userInfo.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Avatar = request.PhotoUrl,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                    IsVerified = true
+                };
+                await _userRepo.CreateAsync(user);
+            }
+            else
+            {
+                // Her girişte avatar ve ismi güncelle
+                user.Avatar = request.PhotoUrl;
+                user.FirstName = string.IsNullOrEmpty(user.FirstName) ? request.FirstName : user.FirstName;
+                user.LastName = string.IsNullOrEmpty(user.LastName) ? request.LastName : user.LastName;
+                user.UpdatedAt = DateTime.UtcNow;
+                await _userRepo.UpdateAsync(user.Id, user);
+            }
+
+            return GenerateAuthResponse(user);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public async Task<UserDto?> GetUserByIdAsync(string id)
     {
         var user = await _userRepo.GetByIdAsync(id);
@@ -203,8 +253,7 @@ public class AuthService : IAuthService
 
     private static UserDto MapToDto(User u) => new(
         u.Id, u.Email, u.FirstName, u.LastName, u.Phone, u.Avatar,
-        u.Role,
-        u.MembershipTier, u.MemberSince, u.TotalBookings, u.IsVerified
+        u.Role, u.MembershipTier, u.MemberSince, u.TotalBookings, u.IsVerified
     );
 
     public async Task<UserDto?> UpdateProfileAsync(string userId, UpdateProfileRequest request)
@@ -222,7 +271,7 @@ public class AuthService : IAuthService
         return MapToDto(user);
     }
 
-    public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest request)   
+    public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordRequest request)
     {
         var user = await _userRepo.GetByIdAsync(userId);
         if (user == null) return false;
@@ -235,24 +284,24 @@ public class AuthService : IAuthService
         return true;
     }
 
-public async Task<UserDto?> UpdatePreferencesAsync(string userId, UpdatePreferencesRequest request)
-{
-    var user = await _userRepo.GetByIdAsync(userId);
-    if (user == null) return null;
-
-    user.Preferences = new UserPreferences
+    public async Task<UserDto?> UpdatePreferencesAsync(string userId, UpdatePreferencesRequest request)
     {
-        PreferredVehicleType = request.PreferredVehicleType,
-        PreferredBrands = request.PreferredBrands,
-        ChauffeurPreferred = request.ChauffeurPreferred,
-        NotificationsEnabled = request.NotificationsEnabled,
-        MarketingOptIn = request.MarketingOptIn
-    };
-    user.UpdatedAt = DateTime.UtcNow;
+        var user = await _userRepo.GetByIdAsync(userId);
+        if (user == null) return null;
 
-    await _userRepo.UpdateAsync(userId, user);
-    return MapToDto(user);
-}
+        user.Preferences = new UserPreferences
+        {
+            PreferredVehicleType = request.PreferredVehicleType,
+            PreferredBrands = request.PreferredBrands,
+            ChauffeurPreferred = request.ChauffeurPreferred,
+            NotificationsEnabled = request.NotificationsEnabled,
+            MarketingOptIn = request.MarketingOptIn
+        };
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepo.UpdateAsync(userId, user);
+        return MapToDto(user);
+    }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

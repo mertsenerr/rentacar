@@ -102,6 +102,14 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPost("google-login")]
+    public async Task<ActionResult<AuthResponse>> GoogleLogin([FromBody] GoogleLoginRequest request)
+    {
+        var response = await _authService.GoogleLoginAsync(request);
+        if (response == null) return Unauthorized(new { message = "Google authentication failed" });
+        return Ok(response);
+    }
+
     [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()

@@ -11,6 +11,15 @@ public record RegisterRequest(string Email, string Password, string ConfirmPassw
 public record AuthResponse(UserDto User, string AccessToken, string RefreshToken, int ExpiresIn);
 public record UserDto(string Id, string Email, string FirstName, string LastName, string? Phone, string? Avatar, string Role, string MembershipTier, DateTime MemberSince, int TotalBookings, bool IsVerified);
 
+// Google Auth DTOs
+public record GoogleLoginRequest(string IdToken, string Email, string FirstName, string LastName, string? PhotoUrl);
+public class GoogleTokenPayload
+{
+    public string Email { get; set; } = "";
+    public string Sub { get; set; } = "";
+    public string Name { get; set; } = "";
+}
+
 // Vehicle DTOs
 public record VehicleDto(
     string Id, string Name, string Model, string Brand, int Year, decimal Price, string PriceUnit, string Currency,
