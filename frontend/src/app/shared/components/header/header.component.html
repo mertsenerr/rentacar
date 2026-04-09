@@ -1,0 +1,423 @@
+<header 
+  class="header" 
+  [class.scrolled]="isScrolled()"
+  [class.mega-open]="activeMegaMenu()"
+>
+  <!-- Main Header Bar -->
+  <div class="header-container">
+    <!-- Logo -->
+    <a routerLink="/" class="logo" (click)="closeMegaMenu()">
+      <div class="logo-mark">
+        <img src="assets/images/header/logo.png" alt="Corporate Elite">
+      </div>
+    </a>
+
+    <!-- Main Navigation -->
+    <nav class="main-nav hide-mobile">
+      @for (item of navItems; track item.route) {
+        @if (item.hasMegaMenu) {
+          <button 
+            class="nav-link"
+            [class.active]="isActiveRoute(item.route)"
+            [class.mega-active]="activeMegaMenu() === item.route"
+            (mouseenter)="openMegaMenu(item.route)"
+            (click)="toggleMegaMenu(item.route)"
+          >
+            {{ item.label }}
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none">
+              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        } @else {
+          <a 
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.route === '/' }"
+            class="nav-link"
+            (click)="closeMegaMenu()"
+          >
+            {{ item.label }}
+          </a>
+        }
+      }
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="header-actions">
+      <!-- Comparison Badge -->
+      @if (comparisonCount() > 0) {
+        <a 
+          routerLink="/comparison" 
+          class="comparison-badge"
+          (click)="closeMegaMenu()"
+        >
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M9 3H4C3.44772 3 3 3.44772 3 4V9C3 9.55228 3.44772 10 4 10H9C9.55228 10 10 9.55228 10 9V4C10 3.44772 9.55228 3 9 3Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M20 3H15C14.4477 3 14 3.44772 14 4V9C14 9.55228 14.4477 10 15 10H20C20.5523 10 21 9.55228 21 9V4C21 3.44772 20.5523 3 20 3Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M9 14H4C3.44772 14 3 14.4477 3 15V20C3 20.5523 3.44772 21 4 21H9C9.55228 21 10 20.5523 10 20V15C10 14.4477 9.55228 14 9 14Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M20 14H15C14.4477 14 14 14.4477 14 15V20C14 20.5523 14.4477 21 15 21H20C20.5523 21 21 20.5523 21 20V15C21 14.4477 20.5523 14 20 14Z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span class="badge-count">{{ comparisonCount() }}</span>
+        </a>
+      }
+
+      <!-- Client Login -->
+      @if (isAuthenticated()) {
+        <div class="user-menu">
+          <button class="user-button" (click)="toggleUserMenu()">
+            <div class="user-avatar">
+              @if (user()?.avatar) {
+                <img [src]="user()?.avatar" [alt]="userName()">
+              } @else {
+                <span>{{ getInitials() }}</span>
+              }
+            </div>
+            <span class="user-name hide-mobile">{{ user()?.firstName }}</span>
+          </button>
+          @if (showUserMenu()) {
+            <div class="user-dropdown" @slideDown>
+              <a routerLink="/account" class="dropdown-item" (click)="closeUserMenu()">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                My Account
+              </a>
+              <a routerLink="/account" [queryParams]="{ tab: 'bookings' }" class="dropdown-item" (click)="closeUserMenu()">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M16 2V6M8 2V6M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                My Bookings
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item logout" (click)="logout()">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M16 17L21 12L16 7M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Sign Out
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/auth/login" class="login-link hide-mobile" (click)="closeMegaMenu()">
+          Client Login
+        </a>
+      }
+
+      <!-- Book Now CTA -->
+      <a routerLink="/booking" class="btn-book" (click)="closeMegaMenu()">
+        <span class="btn-text">Book Now</span>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-toggle hide-desktop" (click)="toggleMobileMenu()">
+        <span class="hamburger" [class.active]="mobileMenuOpen()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mega Menu Dropdown -->
+  @if (activeMegaMenu()) {
+    <div 
+      class="mega-menu"
+      (mouseenter)="keepMegaMenuOpen()"
+      (mouseleave)="closeMegaMenu()"
+      @slideDown
+    >
+      <div class="mega-menu-inner">
+        <!-- Left Column: Brand/Model Selector -->
+        <div class="mega-nav-column">
+          @if (activeMegaMenu() === '/collection') {
+            <!-- Search Bar -->
+            <div class="mega-search">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <input 
+                type="text" 
+                placeholder="Search brand or model..."
+                [(ngModel)]="searchQuery"
+                (input)="filterBrands()"
+                class="search-input"
+              >
+            </div>
+
+            <!-- Brand Tabs -->
+            <div class="brand-tabs">
+              <button 
+                class="brand-tab"
+                [class.active]="brandTab() === 'popular'"
+                (click)="setBrandTab('popular')"
+              >
+                Popular
+              </button>
+              <button 
+                class="brand-tab"
+                [class.active]="brandTab() === 'all'"
+                (click)="setBrandTab('all')"
+              >
+                All Brands
+              </button>
+            </div>
+
+            <!-- Scrollable Brand List -->
+            <div class="brand-list-container">
+              @for (brand of getFilteredBrands(); track brand.id) {
+                <div class="brand-item">
+                  <button 
+                    class="brand-header"
+                    [class.expanded]="expandedBrand() === brand.id"
+                    [class.active]="activeBrand() === brand.id"
+                    (click)="toggleBrand(brand.id)"
+                  >
+                    <div class="brand-info">
+                      <img [src]="brand.logo" [alt]="brand.name" class="brand-logo">
+                      <div class="brand-details">
+                        <span class="brand-name">{{ brand.name }}</span>
+                        <span class="brand-count">{{ brand.models.length }} models</span>
+                      </div>
+                    </div>
+                    <svg class="brand-chevron" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  
+                  @if (expandedBrand() === brand.id) {
+                    <div class="model-list" @slideDown>
+                      @for (model of brand.models; track model.id) {
+                        <a 
+                          [routerLink]="model.route"
+                          class="model-item"
+                          [class.active]="activeModel() === model.id"
+                          (mouseenter)="setActiveModelPreview(model.id, model)"
+                          (click)="closeMegaMenu()"
+                        >
+                          <div class="model-info">
+                            <span class="model-name">{{ model.name }}</span>
+                            <span class="model-year">{{ model.year }}</span>
+                          </div>
+                          <div class="model-meta">
+                            <span class="model-price">{{ model.pricePerDay }}</span>
+                            <svg class="model-arrow" viewBox="0 0 24 24" fill="none">
+                              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                          </div>
+                        </a>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <a 
+              routerLink="/collection" 
+              class="mega-view-all"
+              (click)="closeMegaMenu()"
+            >
+              View Full Collection
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </a>
+          } @else {
+            <!-- Services Menu -->
+            <h3 class="mega-column-title">Our Services</h3>
+            <div class="service-nav-list">
+              @for (item of servicesMenuItems; track item.id) {
+                <a
+                  [routerLink]="item.route"
+                  class="service-nav-item"
+                  [class.active]="activeMenuItem() === item.id"
+                  (mouseenter)="setActiveMenuItem(item.id)"
+                  (click)="closeMegaMenu()"
+                >
+                  <div class="service-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      @for (path of serviceIcons[item.id].paths || []; track path) {
+                        <path [attr.d]="path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      }
+                      @for (circle of serviceIcons[item.id].circles || []; track circle.cx) {
+                        <circle [attr.cx]="circle.cx" [attr.cy]="circle.cy" [attr.r]="circle.r" stroke="currentColor" stroke-width="1.5"/>
+                      }
+                    </svg>
+                  </div>
+                  <div class="service-nav-text">
+                    <span class="item-title">{{ item.title }}</span>
+                    <span class="item-subtitle">{{ item.subtitle }}</span>
+                  </div>
+                  @if (item.badge) {
+                    <span class="item-badge">{{ item.badge }}</span>
+                  }
+                  <svg class="item-arrow" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </a>
+              }
+            </div>
+            <a
+              routerLink="/services"
+              class="mega-view-all"
+              (click)="closeMegaMenu()"
+            >
+              View All Services
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </a>
+          }
+        </div>
+
+        <!-- Center Column: Vehicle / Service Preview -->
+        <div class="mega-content-column">
+          @if (activeMegaMenu() === '/collection') {
+            @if (activeVehiclePreview(); as preview) {
+              <div class="content-preview" @fadeAnimation>
+                <div class="preview-image-slider">
+                  <div class="preview-image">
+                    <img [src]="preview.image" [alt]="preview.title">
+                    <div class="preview-overlay"></div>
+                  </div>
+                </div>
+                <div class="preview-info">
+                  <div class="preview-badge">{{ preview.category }}</div>
+                  <h4 class="preview-title">{{ preview.title }}</h4>
+                  <p class="preview-description">{{ preview.description }}</p>
+                  <div class="preview-specs">
+                    @for (spec of preview.specs; track spec.label) {
+                      <div class="spec-item">
+                        <span class="spec-label">{{ spec.label }}</span>
+                        <span class="spec-value">{{ spec.value }}</span>
+                      </div>
+                    }
+                  </div>
+                  <div class="preview-actions">
+                    <a [routerLink]="preview.route" class="preview-link primary" (click)="closeMegaMenu()">
+                      View Details
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                    </a>
+                    <a routerLink="/booking" class="preview-link secondary" (click)="closeMegaMenu()">
+                      Quick Book
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+          } @else if (activeMegaMenu() === '/services') {
+            @if (activeServiceItem(); as service) {
+              <div class="content-preview service-preview" @fadeAnimation>
+                <div class="preview-image-slider">
+                  <div class="preview-image">
+                    <img [src]="service.image" [alt]="service.title">
+                    <div class="preview-overlay"></div>
+                  </div>
+                </div>
+                <div class="preview-info">
+                  @if (service.badge) {
+                    <div class="preview-badge">{{ service.badge }}</div>
+                  }
+                  <h4 class="preview-title">{{ service.title }}</h4>
+                  <p class="preview-description">{{ service.description }}</p>
+                  <ul class="service-features">
+                    @for (feature of service.features; track feature) {
+                      <li class="feature-item">
+                        <svg class="feature-check" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        {{ feature }}
+                      </li>
+                    }
+                  </ul>
+                  <div class="preview-actions">
+                    <a [routerLink]="service.route" class="preview-link primary" (click)="closeMegaMenu()">
+                      Learn More
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                    </a>
+                    <a routerLink="/booking" class="preview-link secondary" (click)="closeMegaMenu()">
+                      Book Now
+                    </a>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Right Column: Video / Service Image -->
+        <div class="mega-video-column">
+          @if (activeMegaMenu() === '/collection') {
+            @if (activeVehiclePreview(); as preview) {
+              @if (preview.video) {
+                <video
+                  [src]="preview.video"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  class="mega-video"
+                ></video>
+              } @else {
+                <div class="mega-static-image">
+                  <img [src]="preview.image" [alt]="preview.title">
+                </div>
+              }
+            }
+          } @else if (activeMegaMenu() === '/services') {
+            @if (activeServiceItem(); as service) {
+              <div class="mega-static-image">
+                <img [src]="service.image" [alt]="service.title">
+              </div>
+            }
+          }
+          <div class="video-overlay"></div>
+          <div class="video-content">
+            @if (activeMegaMenu() === '/services') {
+              <p class="video-tagline">Premium Services</p>
+              <p class="video-cta">Luxury beyond transportation</p>
+            } @else {
+              <p class="video-tagline">Experience Excellence</p>
+              <p class="video-cta">Discover the art of luxury transportation</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-menu" @slideDown>
+      <nav class="mobile-nav">
+        @for (item of navItems; track item.route) {
+          <a 
+            [routerLink]="item.route"
+            class="mobile-nav-link"
+            (click)="closeMobileMenu()"
+          >
+            {{ item.label }}
+          </a>
+        }
+        @if (!isAuthenticated()) {
+          <a routerLink="/auth/login" class="mobile-nav-link" (click)="closeMobileMenu()">
+            Client Login
+          </a>
+        }
+      </nav>
+    </div>
+  }
+</header>

@@ -1,0 +1,149 @@
+<section class="comparison-page">
+  <div class="container">
+    <div class="page-header">
+      <a routerLink="/collection" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Back to Collection
+      </a>
+      <h1 class="page-title">Compare Vehicles</h1>
+      <p class="page-subtitle">Analyze specifications side-by-side to find your perfect match.</p>
+    </div>
+
+    @if (selectedVehicles().length < 2) {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H4C3.45 3 3 3.45 3 4V9C3 9.55 3.45 10 4 10H9C9.55 10 10 9.55 10 9V4C10 3.45 9.55 3 9 3Z" stroke="currentColor" stroke-width="1.5"/><path d="M20 3H15C14.45 3 14 3.45 14 4V9C14 9.55 14.45 10 15 10H20C20.55 10 21 9.55 21 9V4C21 3.45 20.55 3 20 3Z" stroke="currentColor" stroke-width="1.5"/><path d="M9 14H4C3.45 14 3 14.45 3 15V20C3 20.55 3.45 21 4 21H9C9.55 21 10 20.55 10 20V15C10 14.45 9.55 14 9 14Z" stroke="currentColor" stroke-width="1.5"/><path d="M20 14H15C14.45 14 14 14.45 14 15V20C14 20.55 14.45 21 15 21H20C20.55 21 21 20.55 21 20V15C21 14.45 20.55 14 20 14Z" stroke="currentColor" stroke-width="1.5"/></svg>
+        <h3>Select vehicles to compare</h3>
+        <p>Choose at least 2 vehicles from our collection.</p>
+        <a routerLink="/collection" class="btn btn-primary">Browse Collection</a>
+      </div>
+    } @else {
+      <div class="comparison-container">
+        <div class="comparison-actions">
+          <span class="comparison-info">Comparing {{ selectedVehicles().length }} vehicles</span>
+          <button class="btn-clear" (click)="clearComparison()">Clear All</button>
+        </div>
+
+        <div class="comparison-table" [style.--columns]="selectedVehicles().length">
+          <!-- Vehicle Cards -->
+          <div class="table-row vehicle-cards">
+            <div class="row-label"></div>
+            @for (vehicle of selectedVehicles(); track vehicle.id) {
+              <div class="vehicle-card">
+                <button class="remove-btn" (click)="removeVehicle(vehicle.id)">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+                <div class="card-image"><img [src]="vehicle.image" [alt]="vehicle.name"></div>
+                <div class="card-info">
+                  <span class="vehicle-brand">{{ vehicle.brand }}</span>
+                  <h3 class="vehicle-name">{{ vehicle.name }}</h3>
+                  <p class="vehicle-model">{{ vehicle.model }}</p>
+                  <div class="vehicle-price"><span class="currency">$</span><span class="amount">{{ vehicle.price | number }}</span><span class="period">/{{ vehicle.priceUnit }}</span></div>
+                </div>
+                <a [routerLink]="['/booking', vehicle.id]" class="btn btn-primary btn-sm">Book Now</a>
+              </div>
+            }
+          </div>
+
+          <!-- Performance -->
+          <div class="table-section">
+            <h4 class="section-title">Performance</h4>
+            <div class="table-row">
+              <div class="row-label">Power</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value" [class.highlight]="isHighest(vehicle, 'power')">{{ vehicle.specs.power }}</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">0-60 mph</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value" [class.highlight]="isFastest(vehicle)">{{ vehicle.specs.zeroToSixty }}</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Top Speed</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.specs.topSpeed }}</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Drive</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.specs.drive }}</div>
+              }
+            </div>
+          </div>
+
+          <!-- Engine -->
+          <div class="table-section">
+            <h4 class="section-title">Engine & Transmission</h4>
+            <div class="table-row">
+              <div class="row-label">Engine</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.specs.engine }}</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Transmission</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.specs.transmission }}</div>
+              }
+            </div>
+          </div>
+
+          <!-- Rating -->
+          <div class="table-section">
+            <h4 class="section-title">Rating</h4>
+            <div class="table-row">
+              <div class="row-label">Rating</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value rating" [class.highlight]="isHighestRating(vehicle)">
+                  <div class="stars">
+                    @for (star of [1,2,3,4,5]; track star) {
+                      <svg viewBox="0 0 24 24" [class.filled]="star <= vehicle.averageRating"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" [attr.fill]="star <= vehicle.averageRating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5"/></svg>
+                    }
+                  </div>
+                  {{ vehicle.averageRating.toFixed(1) }}
+                </div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Reviews</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.totalReviews }} reviews</div>
+              }
+            </div>
+          </div>
+
+          <!-- Rental -->
+          <div class="table-section">
+            <h4 class="section-title">Rental Terms</h4>
+            <div class="table-row">
+              <div class="row-label">Min. Age</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.rentalTerms.minimumAge }} years</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Deposit</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">{{ vehicle.rentalTerms.securityDeposit | currency }}</div>
+              }
+            </div>
+            <div class="table-row">
+              <div class="row-label">Chauffeur</div>
+              @for (vehicle of selectedVehicles(); track vehicle.id) {
+                <div class="row-value">
+                  @if (vehicle.rentalTerms.chauffeurAvailable) {
+                    <span class="available">Available</span>
+                  } @else {
+                    <span class="unavailable">Not Available</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,335 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// CORPORATE ELITE - VEHICLE DETAIL MODAL STYLES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 90vh;
+  background: var(--ce-charcoal);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  z-index: var(--z-modal);
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  color: var(--ce-ivory);
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-base);
+  svg { width: 18px; height: 18px; }
+  &:hover { background: var(--ce-gold); color: var(--ce-obsidian); border-color: var(--ce-gold); }
+}
+
+.modal-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-height: 90vh;
+  overflow: hidden;
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+// Gallery
+.modal-gallery {
+  background: var(--ce-graphite);
+  @media (max-width: 900px) { max-height: 300px; }
+}
+
+.main-image {
+  position: relative;
+  aspect-ratio: 4/3;
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.status-badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.65rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  &.available { background: rgba(74, 124, 89, 0.9); color: var(--ce-white); }
+  &.reserved { background: rgba(196, 165, 116, 0.9); color: var(--ce-obsidian); }
+}
+
+.image-thumbnails {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--ce-charcoal);
+}
+
+.thumbnail {
+  width: 60px;
+  height: 45px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color var(--transition-base);
+  img { width: 100%; height: 100%; object-fit: cover; }
+  &.active, &:hover { border-color: var(--ce-gold); }
+}
+
+// Details
+.modal-details {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.detail-header { margin-bottom: var(--space-5); }
+
+.vehicle-brand {
+  font-size: 0.7rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ce-gold);
+}
+
+.vehicle-name {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: var(--fw-light);
+  color: var(--ce-white);
+  margin: var(--space-1) 0;
+}
+
+.vehicle-model {
+  font-size: 0.95rem;
+  font-weight: var(--fw-light);
+  color: var(--ce-platinum);
+  margin-bottom: var(--space-3);
+}
+
+.vehicle-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+  svg { width: 14px; height: 14px; color: var(--ce-ash); &.filled { color: var(--ce-gold); } }
+}
+
+.rating-text { font-size: 0.85rem; color: var(--ce-platinum); }
+
+// Tabs
+.detail-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tab-btn {
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.8rem;
+  font-weight: var(--fw-medium);
+  color: var(--ce-platinum);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  &:hover { color: var(--ce-ivory); }
+  &.active { color: var(--ce-gold); border-bottom-color: var(--ce-gold); }
+}
+
+// Tab Content
+.tab-content { flex: 1; overflow-y: auto; }
+
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spec-label { font-size: 0.8rem; color: var(--ce-silver); }
+.spec-value { font-size: 0.85rem; font-weight: var(--fw-medium); color: var(--ce-ivory); }
+
+.features-section {
+  h4 { font-size: 0.75rem; font-weight: var(--fw-medium); letter-spacing: 0.15em; text-transform: uppercase; color: var(--ce-gold); margin-bottom: var(--space-3); }
+}
+
+.features-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.85rem;
+    color: var(--ce-platinum);
+    svg { width: 14px; height: 14px; color: var(--ce-gold); }
+  }
+}
+
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.term-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  .term-label { font-size: 0.75rem; color: var(--ce-silver); }
+  .term-value { font-size: 0.9rem; font-weight: var(--fw-medium); color: var(--ce-ivory); }
+}
+
+.policy-section {
+  p { font-size: 0.85rem; color: var(--ce-platinum); margin-bottom: var(--space-2); line-height: 1.5; strong { color: var(--ce-gold); } }
+}
+
+// Reviews
+.reviews-section { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.review-card {
+  padding: var(--space-4);
+  background: var(--ce-graphite);
+  border-radius: var(--radius-md);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.reviewer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--ce-gold);
+  color: var(--ce-obsidian);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: var(--fw-semibold);
+}
+
+.reviewer-info { display: flex; flex-direction: column; gap: var(--space-1); }
+.reviewer-name { font-size: 0.9rem; font-weight: var(--fw-medium); color: var(--ce-white); }
+.review-stars { display: flex; gap: 2px; svg { width: 12px; height: 12px; color: var(--ce-ash); &.filled { color: var(--ce-gold); } } }
+
+.review-title { font-size: 0.95rem; font-weight: var(--fw-medium); color: var(--ce-white); margin-bottom: var(--space-2); }
+.review-comment { font-size: 0.85rem; color: var(--ce-platinum); line-height: 1.5; }
+
+// Add Review
+.add-review {
+  padding: var(--space-5);
+  background: var(--ce-graphite);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  h4 { font-size: 0.9rem; font-weight: var(--fw-medium); color: var(--ce-white); margin-bottom: var(--space-4); }
+}
+
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  span { font-size: 0.85rem; color: var(--ce-platinum); }
+}
+
+.star-input { display: flex; gap: var(--space-1); }
+
+.star-btn {
+  padding: var(--space-1);
+  background: none;
+  border: none;
+  cursor: pointer;
+  svg { width: 20px; height: 20px; color: var(--ce-ash); transition: color var(--transition-base); }
+  &.filled svg, &:hover svg { color: var(--ce-gold); }
+}
+
+.review-input, .review-textarea {
+  width: 100%;
+  padding: var(--space-3);
+  font-size: 0.9rem;
+  color: var(--ce-ivory);
+  background: var(--ce-charcoal);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+  &::placeholder { color: var(--ce-silver); }
+  &:focus { outline: none; border-color: var(--ce-gold); }
+}
+
+.review-textarea { resize: vertical; min-height: 80px; }
+
+// Footer
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-5);
+  margin-top: var(--space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: var(--space-4);
+  @media (max-width: 500px) { flex-direction: column; }
+}
+
+.price-display { .price-label { font-size: 0.75rem; color: var(--ce-silver); display: block; margin-bottom: var(--space-1); } }
+
+.price-amount {
+  display: flex;
+  align-items: baseline;
+  .currency { font-size: 1rem; color: var(--ce-gold); }
+  .amount { font-family: var(--font-display); font-size: 1.75rem; font-weight: var(--fw-light); color: var(--ce-white); }
+  .period { font-size: 0.85rem; color: var(--ce-platinum); }
+}
+
+.footer-actions {
+  display: flex;
+  gap: var(--space-3);
+  .btn { padding: var(--space-3) var(--space-5); }
+}

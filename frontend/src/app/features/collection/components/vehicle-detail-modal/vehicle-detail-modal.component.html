@@ -1,0 +1,145 @@
+<div class="modal-backdrop" (click)="close.emit()">
+  <div class="modal-container" @scaleIn (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="close.emit()">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="modal-content">
+      <!-- Gallery -->
+      <div class="modal-gallery">
+        <div class="main-image">
+           <img [src]="activeImage()" [alt]="vehicle.name" [style.object-position]="vehicle.imagePosition || 'center center'">
+
+          <span class="status-badge" [class]="vehicle.status">
+            {{ vehicle.status === 'available' ? 'Available' : 'Reserved' }}
+          </span>
+        </div>
+        @if (vehicle.images.length > 1) {
+          <div class="image-thumbnails">
+            @for (img of vehicle.images; track img.id) {
+              <button class="thumbnail" [class.active]="activeImage() === img.url" (click)="activeImage.set(img.url)">
+                <img [src]="img.url" [alt]="img.alt">
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Details -->
+      <div class="modal-details">
+        <div class="detail-header">
+          <span class="vehicle-brand">{{ vehicle.brand }}</span>
+          <h2 class="vehicle-name">{{ vehicle.name }}</h2>
+          <p class="vehicle-model">{{ vehicle.model }}</p>
+          <div class="vehicle-rating">
+            <div class="stars">
+              @for (star of [1,2,3,4,5]; track star) {
+                <svg viewBox="0 0 24 24" [class.filled]="star <= vehicle.averageRating">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" 
+                        [attr.fill]="star <= vehicle.averageRating ? 'currentColor' : 'none'"
+                        stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              }
+            </div>
+            <span class="rating-text">{{ vehicle.averageRating.toFixed(1) }} ({{ vehicle.totalReviews }} reviews)</span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="detail-tabs">
+          <button class="tab-btn" [class.active]="activeTab() === 'specs'" (click)="activeTab.set('specs')">Specifications</button>
+          <button class="tab-btn" [class.active]="activeTab() === 'terms'" (click)="activeTab.set('terms')">Rental Terms</button>
+          <button class="tab-btn" [class.active]="activeTab() === 'reviews'" (click)="activeTab.set('reviews')">Reviews</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+          @switch (activeTab()) {
+            @case ('specs') {
+              <div class="specs-grid">
+                <div class="spec-row"><span class="spec-label">Engine</span><span class="spec-value">{{ vehicle.specs.engine }}</span></div>
+                <div class="spec-row"><span class="spec-label">Power</span><span class="spec-value">{{ vehicle.specs.power }}</span></div>
+                <div class="spec-row"><span class="spec-label">0-60 mph</span><span class="spec-value">{{ vehicle.specs.zeroToSixty }}</span></div>
+                <div class="spec-row"><span class="spec-label">Top Speed</span><span class="spec-value">{{ vehicle.specs.topSpeed }}</span></div>
+                <div class="spec-row"><span class="spec-label">Drive</span><span class="spec-value">{{ vehicle.specs.drive }}</span></div>
+                <div class="spec-row"><span class="spec-label">Transmission</span><span class="spec-value">{{ vehicle.specs.transmission }}</span></div>
+              </div>
+              <div class="features-section">
+                <h4>Features</h4>
+                <ul class="features-list">
+                  @for (feature of vehicle.features.slice(0, 6); track feature) {
+                    <li><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>{{ feature }}</li>
+                  }
+                </ul>
+              </div>
+            }
+            @case ('terms') {
+              <div class="terms-grid">
+                <div class="term-item"><span class="term-label">Min. Age</span><span class="term-value">{{ vehicle.rentalTerms.minimumAge }} years</span></div>
+                <div class="term-item"><span class="term-label">Min. Rental</span><span class="term-value">{{ vehicle.rentalTerms.minimumRentalDays }} day(s)</span></div>
+                <div class="term-item"><span class="term-label">Mileage</span><span class="term-value">{{ vehicle.rentalTerms.mileageLimit }}</span></div>
+                <div class="term-item"><span class="term-label">Deposit</span><span class="term-value">{{ vehicle.rentalTerms.securityDeposit | currency }}</span></div>
+              </div>
+              <div class="policy-section">
+                <p><strong>Cancellation:</strong> {{ vehicle.rentalTerms.cancellationPolicy }}</p>
+                <p><strong>Fuel Policy:</strong> {{ vehicle.rentalTerms.fuelPolicy }}</p>
+              </div>
+            }
+            @case ('reviews') {
+              <div class="reviews-section">
+                @for (review of reviews(); track review.id) {
+                  <div class="review-card">
+                    <div class="review-header">
+                      <div class="reviewer-avatar">{{ getInitials(review.userName) }}</div>
+                      <div class="reviewer-info">
+                        <span class="reviewer-name">{{ review.userName }}</span>
+                        <div class="review-stars">
+                          @for (star of [1,2,3,4,5]; track star) {
+                            <svg viewBox="0 0 24 24" [class.filled]="star <= review.rating"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" [attr.fill]="star <= review.rating ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5"/></svg>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                    <h5 class="review-title">{{ review.title }}</h5>
+                    <p class="review-comment">{{ review.comment }}</p>
+                  </div>
+                }
+                <!-- Add Review -->
+                <div class="add-review">
+                  <h4>Leave a Review</h4>
+                  <div class="rating-input">
+                    <span>Rating:</span>
+                    <div class="star-input">
+                      @for (star of [1,2,3,4,5]; track star) {
+                        <button class="star-btn" [class.filled]="star <= newReviewRating()" (click)="newReviewRating.set(star)">
+                          <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" [attr.fill]="star <= newReviewRating() ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                  <input type="text" placeholder="Review title..." [(ngModel)]="newReviewTitle" class="review-input">
+                  <textarea placeholder="Share your experience..." [(ngModel)]="newReviewComment" class="review-textarea" rows="3"></textarea>
+                  <button class="btn btn-primary" (click)="submitReview()" [disabled]="!canSubmitReview()">Submit Review</button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <div class="price-display">
+            <span class="price-label">From</span>
+            <div class="price-amount"><span class="currency">$</span><span class="amount">{{ vehicle.price | number }}</span><span class="period">/{{ vehicle.priceUnit }}</span></div>
+          </div>
+          <div class="footer-actions">
+            <a [routerLink]="['/collection', vehicle.id]" class="btn btn-outline" (click)="close.emit()">Full Details</a>
+            <a [routerLink]="['/booking', vehicle.id]" class="btn btn-primary" (click)="close.emit()">Book Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

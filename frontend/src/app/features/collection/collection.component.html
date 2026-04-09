@@ -1,0 +1,186 @@
+<!-- Page Header -->
+<section class="page-header">
+  <div class="header-background">
+    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=1920" alt="">
+    <div class="header-overlay"></div>
+  </div>
+  <div class="container">
+    <div class="header-content">
+      <span class="page-tagline">Our Fleet</span>
+      <h1 class="page-title">The Collection</h1>
+      <p class="page-subtitle">
+        Explore our curated selection of the world's most prestigious automobiles.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Search & Filter Section -->
+<section class="filter-section">
+  <div class="container">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search by name, model, or brand..."
+          [value]="searchQuery()"
+          (input)="onSearchChange($event)"
+          class="search-input"
+        >
+        @if (searchQuery()) {
+          <button class="search-clear" (click)="searchQuery.set('')">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        }
+      </div>
+      
+      <button class="filter-toggle" (click)="toggleFilters()" [class.active]="showFilters()">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 21V14M4 10V3M12 21V12M12 8V3M20 21V16M20 12V3M1 14H7M9 8H15M17 16H23" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Filters
+      </button>
+    </div>
+
+    <!-- Filter Panel -->
+    @if (showFilters()) {
+      <div class="filter-panel">
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <div class="filter-options">
+            @for (cat of categories(); track cat) {
+              <button 
+                class="filter-chip"
+                [class.active]="selectedCategory() === cat"
+                (click)="onCategoryChange(cat)"
+              >
+                {{ cat === 'all' ? 'All' : (cat | titlecase) }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Brand</label>
+          <div class="filter-options">
+            @for (brand of brands(); track brand) {
+              <button 
+                class="filter-chip"
+                [class.active]="selectedBrand() === brand"
+                (click)="onBrandChange(brand)"
+              >
+                {{ brand === 'all' ? 'All Brands' : brand }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Sort By</label>
+          <select class="filter-select" [value]="sortBy()" (change)="onSortChange($any($event.target).value)">
+            <option value="featured">Featured</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Highest Rated</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </div>
+
+        <button class="filter-clear" (click)="clearFilters()">
+          Clear All Filters
+        </button>
+      </div>
+    }
+
+    <!-- Results Info & Comparison Bar -->
+    <div class="results-bar">
+      <p class="results-count">
+        Showing <strong>{{ filteredVehicles().length }}</strong> vehicles
+        @if (searchQuery() || selectedCategory() !== 'all' || selectedBrand() !== 'all') {
+          <span class="filter-active">(filtered)</span>
+        }
+      </p>
+
+      @if (comparisonCount() > 0) {
+        <div class="comparison-bar">
+          <span class="comparison-info">
+            <strong>{{ comparisonCount() }}</strong> vehicles selected for comparison
+          </span>
+          <div class="comparison-actions">
+            <button class="btn-clear-compare" (click)="clearComparison()">
+              Clear
+            </button>
+            <a 
+              routerLink="/comparison" 
+              class="btn-compare"
+              [class.disabled]="!canCompare()"
+            >
+              Compare Now
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Vehicle Grid -->
+<section class="collection-section">
+  <div class="container">
+    @if (loading()) {
+      <div class="loading-grid">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-image skeleton"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-line skeleton" style="width: 60%"></div>
+              <div class="skeleton-line skeleton" style="width: 80%"></div>
+              <div class="skeleton-line skeleton" style="width: 40%"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (filteredVehicles().length === 0) {
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M8 11H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <h3>No vehicles found</h3>
+        <p>Try adjusting your search or filter criteria.</p>
+        <button class="btn btn-outline" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    } @else {
+      <div class="vehicle-grid">
+        @for (vehicle of filteredVehicles(); track vehicle.id) {
+          <app-vehicle-card 
+            [vehicle]="vehicle"
+            [showCompare]="true"
+            (viewDetails)="openVehicleModal($event)"
+          />
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Vehicle Detail Modal -->
+@if (selectedVehicleForModal()) {
+  <app-vehicle-detail-modal
+    [vehicle]="selectedVehicleForModal()!"
+    (close)="closeVehicleModal()"
+  />
+}

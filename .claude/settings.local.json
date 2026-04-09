@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(npx ng:*)",
+      "Bash(curl -s http://localhost:5000/api/health)",
+      "Bash(curl -s 'http://localhost:5000/api/vehicles/availability?pickupDate=2026-04-12&returnDate=2026-04-13')",
+      "Bash(python3 -m json.tool)",
+      "Bash(python -m json.tool)"
+    ]
+  }
+}
