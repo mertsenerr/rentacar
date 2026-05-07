@@ -83,6 +83,11 @@
   gap: var(--space-3);
   text-decoration: none;
   z-index: 10;
+  margin-left: max(0px, calc((100vw - 1400px) / 2));
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 
   &:hover {
     .logo-mark svg {
@@ -96,17 +101,20 @@
 }
 
 .logo-mark {
+  display: flex;
+  align-items: center;
   width: auto;
   height: auto;
   color: var(--ce-gold);
   transition: transform var(--transition-base);
 
   img {
-    height: 280px;
+    height: clamp(56px, 7vw, 88px);
     width: auto;
+    max-height: calc(var(--header-height) - 24px);
     object-fit: contain;
     display: block;
-    margin-top: 30px;
+    transition: height var(--transition-slow), max-height var(--transition-slow);
   }
 }
 

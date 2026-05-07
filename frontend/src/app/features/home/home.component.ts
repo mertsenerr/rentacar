@@ -158,8 +158,21 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.leafletMap = L.map(this.mapEl.nativeElement, {
       center: [38.4192, 27.1287],
       zoom: 10,
-      scrollWheelZoom: true,
-      zoomControl: true
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      zoomControl: false
+    });
+
+    L.control.zoom({ position: 'bottomleft' }).addTo(this.leafletMap);
+
+    this.leafletMap.on('dblclick', () => {
+      this.leafletMap.scrollWheelZoom.enable();
+      this.mapEl.nativeElement.classList.add('sx-map--active');
+    });
+
+    this.leafletMap.on('mouseout', () => {
+      this.leafletMap.scrollWheelZoom.disable();
+      this.mapEl.nativeElement.classList.remove('sx-map--active');
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

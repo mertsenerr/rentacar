@@ -854,7 +854,12 @@
 .loc-map {
   width: 100%;
   height: 100%;
+  transition: box-shadow 0.25s ease;
   // Leaflet stilleri global stylesheet'te (view encapsulation dışı)
+
+  &.sx-map--active {
+    box-shadow: inset 0 0 0 2px rgba(196, 165, 116, 0.6);
+  }
 }
 
 // Fleet block — merged into the same Find Your Drive section
