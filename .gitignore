@@ -93,6 +93,8 @@ TestResult.xml
 
 ## Compiled output
 /dist/
+frontend/dist/
+frontend/.angular/
 /tmp/
 /out-tsc/
 /bazel-out/
