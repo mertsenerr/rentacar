@@ -190,12 +190,14 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepo;
     private readonly JwtSettings _jwtSettings;
     private readonly IEmailService _emailService;
+    private readonly IConfiguration _config;
 
-    public AuthService(IUserRepository userRepo, IOptions<JwtSettings> jwtSettings, IEmailService emailService)
+    public AuthService(IUserRepository userRepo, IOptions<JwtSettings> jwtSettings, IEmailService emailService, IConfiguration config)
     {
         _userRepo = userRepo;
         _jwtSettings = jwtSettings.Value;
         _emailService = emailService;
+        _config = config;
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)
@@ -376,7 +378,9 @@ public class AuthService : IAuthService
 
         await _userRepo.UpdateAsync(user.Id, user);
 
-        var resetLink = $"http://localhost:4200/auth/reset-password?token={token}";
+        var frontendBaseUrl = _config["Frontend:BaseUrl"]?.TrimEnd('/')
+            ?? throw new InvalidOperationException("Frontend:BaseUrl is not configured.");
+        var resetLink = $"{frontendBaseUrl}/auth/reset-password?token={token}";
         await _emailService.SendPasswordResetAsync(email, resetLink);
 
         return true;

@@ -63,11 +63,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // CORS
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? Array.Empty<string>();
+var corsPatterns = builder.Configuration.GetSection("Cors:AllowedOriginPatterns").Get<string[]>()
+    ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.SetIsOriginAllowed(origin =>
+              {
+                  if (corsOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase)) return true;
+                  if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri)) return false;
+                  return corsPatterns.Any(p => uri.Host.EndsWith(p, StringComparison.OrdinalIgnoreCase));
+              })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

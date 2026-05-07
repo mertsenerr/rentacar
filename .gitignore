@@ -16,7 +16,7 @@
 .env.*.local
 
 # API Keys & Secrets
-appsettings.json
+# appsettings.json IS tracked — sensitive values are blank and overridden via env vars in production.
 appsettings.Development.json
 appsettings.Production.json
 secrets.json

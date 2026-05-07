@@ -6,19 +6,24 @@ public class EmailService : IEmailService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiToken;
+    private readonly string _from;
 
     public EmailService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
         _apiToken = configuration["Resend:ApiToken"]
             ?? throw new InvalidOperationException("Resend:ApiToken is not configured.");
+        var fromEmail = configuration["Resend:FromEmail"]
+            ?? throw new InvalidOperationException("Resend:FromEmail is not configured.");
+        var fromName = configuration["Resend:FromName"];
+        _from = string.IsNullOrWhiteSpace(fromName) ? fromEmail : $"{fromName} <{fromEmail}>";
     }
 
     public async Task SendPasswordResetAsync(string toEmail, string resetLink)
     {
         var payload = new
         {
-            from = "onboarding@resend.dev",
+            from = _from,
             to = new[] { toEmail },
             subject = "Şifre Sıfırlama - Corporate Elite",
             html = $@"
