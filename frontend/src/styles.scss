@@ -603,3 +603,96 @@ input, textarea, select {
     }
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LEAFLET MAP — global styling (outside Angular view encapsulation)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.loc-map .leaflet-tile-pane {
+  filter: grayscale(0.55) contrast(1.05) brightness(0.85) sepia(0.18);
+}
+
+.loc-map .leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: var(--ce-platinum, #c9c9c9) !important;
+  font-size: 0.6rem !important;
+}
+.loc-map .leaflet-control-attribution a {
+  color: var(--ce-gold, #c4a574) !important;
+}
+.loc-map .leaflet-control-zoom a {
+  background: rgba(15, 15, 15, 0.92) !important;
+  color: var(--ce-gold, #c4a574) !important;
+  border: 1px solid rgba(196, 165, 116, 0.3) !important;
+}
+.loc-map .leaflet-control-zoom a:hover {
+  background: var(--ce-gold, #c4a574) !important;
+  color: #0a0a0a !important;
+}
+
+/* Custom marker (gold teardrop) */
+.sx-pin-inner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  background: rgba(15, 15, 15, 0.95);
+  border: 2px solid #c4a574;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+.sx-pin-inner.selected {
+  background: #c4a574;
+  transform: rotate(-45deg) scale(1.15);
+}
+.sx-pin-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c4a574;
+  transform: rotate(45deg);
+}
+.sx-pin-inner.selected .sx-pin-dot {
+  background: #0a0a0a;
+}
+
+/* User location marker (pulsing dot) */
+.sx-user-pin {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+.sx-user-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(196, 165, 116, 0.4);
+  animation: locPulseGlobal 1.6s ease-out infinite;
+}
+@keyframes locPulseGlobal {
+  0%   { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.sx-user-dot {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #c4a574;
+  box-shadow: 0 0 0 2px #0a0a0a;
+}
+
+/* Tooltip */
+.leaflet-tooltip.sx-tooltip {
+  background: rgba(15, 15, 15, 0.95) !important;
+  border: 1px solid rgba(196, 165, 116, 0.4) !important;
+  color: #ffffff !important;
+  font-family: inherit !important;
+  font-size: 0.75rem !important;
+  padding: 6px 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 2px !important;
+}
+.leaflet-tooltip.sx-tooltip::before { display: none !important; }

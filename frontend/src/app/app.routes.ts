@@ -9,6 +9,11 @@ export const routes: Routes = [
     data: { animation: 'HomePage' }
   },
   {
+    path: 'search',
+    loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
+    data: { animation: 'SearchPage' }
+  },
+  {
     path: 'collection',
     loadComponent: () => import('./features/collection/collection.component').then(m => m.CollectionComponent),
     data: { animation: 'CollectionPage' }

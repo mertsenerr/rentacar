@@ -1,50 +1,477 @@
-<!-- Hero Section -->
-<section class="hero">
-  <div class="hero-background">
-    <video 
-      autoplay 
-      loop 
-      muted 
-      playsinline
-      poster="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920"
-    >
-      <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69a27dbc4ff2b87d38afc35f1a9e7c02d&profile_id=164&oauth2_token_id=57447761" type="video/mp4">
-    </video>
-    <div class="hero-overlay"></div>
-  </div>
-  
-  <div class="hero-content">
-    <div class="hero-tagline animate-fade-in">
-      <span class="tagline-line"></span>
-      <span class="tagline-text">Luxury Fleet Services</span>
-      <span class="tagline-line"></span>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SIXT-INSPIRED HERO — Split Layout · 3D Model · Floating Search Bar
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section class="sx-hero">
+  <div class="sx-hero-bg"></div>
+
+  <div class="sx-hero-shell">
+    <!-- LEFT: Editorial Copy -->
+    <div class="sx-hero-copy">
+      <div class="sx-eyebrow">
+        <span class="sx-dot"></span>
+        <span>Corporate Elite · Est. 2024</span>
+      </div>
+
+      <h1 class="sx-headline">
+        Drive<br>
+        <span class="sx-headline-italic">Beyond</span><br>
+        Ordinary.
+      </h1>
+
+      <p class="sx-sub">
+        From private jets to penthouse pickups —
+        a curated fleet, delivered on demand.
+      </p>
+
+      <div class="sx-meta-row">
+        <div class="sx-meta">
+          <span class="sx-meta-num">50+</span>
+          <span class="sx-meta-label">Vehicles</span>
+        </div>
+        <div class="sx-meta">
+          <span class="sx-meta-num">12</span>
+          <span class="sx-meta-label">Locations</span>
+        </div>
+        <div class="sx-meta">
+          <span class="sx-meta-num">24/7</span>
+          <span class="sx-meta-label">Concierge</span>
+        </div>
+      </div>
     </div>
-    
-    <h1 class="hero-title animate-fade-in-up delay-2">
-      Experience<br>
-      <span class="text-gradient">Extraordinary</span>
-    </h1>
-    
-    <p class="hero-subtitle animate-fade-in-up delay-3">
-      The world's finest automobiles, delivered with uncompromising service.
-    </p>
-    
-    <div class="hero-actions animate-fade-in-up delay-4">
-      <a routerLink="/collection" class="btn btn-primary">
-        Explore Collection
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </a>
-      <a routerLink="/booking" class="btn btn-outline">
-        Book Now
+
+    <!-- RIGHT: Interactive 3D Stage -->
+    <div class="sx-hero-stage">
+      <div class="sx-stage-aura"></div>
+
+      <model-viewer
+        class="sx-model"
+        [attr.src]="modelUrl"
+        alt="Featured 3D vehicle — drag to rotate"
+        camera-controls
+        touch-action="pan-y"
+        auto-rotate
+        auto-rotate-delay="2500"
+        rotation-per-second="22deg"
+        interaction-prompt="auto"
+        interaction-prompt-threshold="2000"
+        shadow-intensity="1.5"
+        shadow-softness="0.85"
+        exposure="1.1"
+        environment-image="neutral"
+        loading="eager"
+        reveal="auto"
+      ></model-viewer>
+
+      <a class="sx-stage-credit"
+         href="https://sketchfab.com/3d-models/porsche-911-with-interior-877b1bc1739f4a2bb65d62fd7ffd9f75"
+         target="_blank" rel="noopener">
+        Model: n.brizitskaya · CC-BY 4.0
       </a>
     </div>
   </div>
-  
-  <div class="hero-scroll-indicator">
-    <span>Scroll to discover</span>
-    <div class="scroll-line"></div>
+
+  <!-- FLOATING SEARCH BAR (Sixt signature) -->
+  <div class="sx-searchbar">
+    <div class="sx-searchbar-inner">
+      <div class="sx-searchbar-head">
+        <span class="sx-search-title">Find your drive</span>
+        <button type="button" class="sx-toggle"
+                [class.active]="!sameLocation()"
+                (click)="toggleSameLocation()">
+          <span class="sx-toggle-dot" [class.on]="!sameLocation()"></span>
+          Different return location
+        </button>
+      </div>
+
+      <div class="sx-searchbar-grid" [class.split-loc]="!sameLocation()">
+        <!-- Pickup Location -->
+        <div class="sx-cell">
+          <button type="button" class="sx-field"
+                  [class.active]="isOpen('pickupLocation')"
+                  (click)="toggleField('pickupLocation'); $event.stopPropagation()">
+            <span class="sx-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </span>
+            <span class="sx-cell-text">
+              <span class="sx-cell-label">{{ sameLocation() ? 'Pickup & Return' : 'Pickup' }}</span>
+              <span class="sx-cell-value">{{ locationName(search.pickupLocation) }}</span>
+            </span>
+          </button>
+          @if (isOpen('pickupLocation')) {
+            <div class="sx-popover sx-popover--locations" (click)="$event.stopPropagation()">
+              <button type="button" class="sx-jump-map" (click)="scrollToLocator(); openField.set(null)">
+                <span>Pick on the map</span>
+                <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+                  <path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </button>
+              @for (group of groupedLocations(); track group.label) {
+                @if (group.items.length) {
+                  <div class="sx-group-label">{{ group.label }}</div>
+                  @for (loc of group.items; track loc.id) {
+                    <button type="button" class="sx-option"
+                            [class.selected]="search.pickupLocation === loc.id"
+                            (click)="selectLocation('pickupLocation', loc.id)">
+                      <span class="sx-option-name">{{ loc.name }}</span>
+                      <span class="sx-option-meta">{{ loc.address }}</span>
+                    </button>
+                  }
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Return Location (only when different) -->
+        @if (!sameLocation()) {
+          <div class="sx-cell">
+            <button type="button" class="sx-field"
+                    [class.active]="isOpen('returnLocation')"
+                    (click)="toggleField('returnLocation'); $event.stopPropagation()">
+              <span class="sx-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </span>
+              <span class="sx-cell-text">
+                <span class="sx-cell-label">Return</span>
+                <span class="sx-cell-value">{{ locationName(search.returnLocation) }}</span>
+              </span>
+            </button>
+            @if (isOpen('returnLocation')) {
+              <div class="sx-popover sx-popover--locations" (click)="$event.stopPropagation()">
+                @for (group of groupedLocations(); track group.label) {
+                  @if (group.items.length) {
+                    <div class="sx-group-label">{{ group.label }}</div>
+                    @for (loc of group.items; track loc.id) {
+                      <button type="button" class="sx-option"
+                              [class.selected]="search.returnLocation === loc.id"
+                              (click)="selectLocation('returnLocation', loc.id)">
+                        <span class="sx-option-name">{{ loc.name }}</span>
+                        <span class="sx-option-meta">{{ loc.address }}</span>
+                      </button>
+                    }
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Pickup Date -->
+        <div class="sx-cell">
+          <button type="button" class="sx-field"
+                  [class.active]="isOpen('pickup')"
+                  (click)="toggleField('pickup'); $event.stopPropagation()">
+            <span class="sx-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </span>
+            <span class="sx-cell-text">
+              <span class="sx-cell-label">Pickup</span>
+              <span class="sx-cell-value">{{ formatDateLabel(search.pickupDate) }} <span class="sx-cell-time">· {{ search.pickupTime }}</span></span>
+            </span>
+          </button>
+          @if (isOpen('pickup') || isOpen('return')) {
+            <div class="sx-popover sx-popover--datetime" (click)="$event.stopPropagation()">
+              <div class="sx-cal-mode-tabs">
+                <button type="button" class="sx-cal-tab" [class.active]="calMode() === 'pickup'" (click)="calMode.set('pickup')">
+                  <span class="sx-cal-tab-label">Pickup</span>
+                  <span class="sx-cal-tab-value">{{ formatDateLabel(search.pickupDate) }}</span>
+                </button>
+                <button type="button" class="sx-cal-tab" [class.active]="calMode() === 'return'" (click)="calMode.set('return')">
+                  <span class="sx-cal-tab-label">Return</span>
+                  <span class="sx-cal-tab-value">{{ formatDateLabel(search.returnDate) }}</span>
+                </button>
+              </div>
+
+              <div class="sx-cal-months">
+                @for (offset of [0, 1]; track offset) {
+                  <div class="sx-cal-month" [class.sx-cal-month--secondary]="offset === 1">
+                    <div class="sx-cal-head">
+                      @if (offset === 0) {
+                        <button type="button" class="sx-nav" (click)="prevMonth()">‹</button>
+                      } @else {
+                        <span class="sx-nav-spacer"></span>
+                      }
+                      <span>{{ monthTitleAt(offset) }}</span>
+                      @if (offset === 1) {
+                        <button type="button" class="sx-nav" (click)="nextMonth()">›</button>
+                      } @else {
+                        <span class="sx-nav-spacer"></span>
+                      }
+                    </div>
+                    <div class="sx-cal-weekdays">
+                      @for (w of weekdays; track w) { <span>{{ w }}</span> }
+                    </div>
+                    <div class="sx-cal-grid">
+                      @for (day of daysAt(offset); track $index) {
+                        <button type="button" class="sx-day"
+                                [class.empty]="day.isEmpty"
+                                [class.today]="day.isToday"
+                                [class.selected]="day.isSelected"
+                                [class.in-range]="day.inRange"
+                                [disabled]="day.isDisabled || day.isEmpty"
+                                (click)="selectCalendarDate(day)">{{ day.day }}</button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="sx-time-row">
+                <label class="sx-time-pair">
+                  <span class="sx-time-pair-label">Pickup time</span>
+                  <select class="sx-time-select" [(ngModel)]="search.pickupTime">
+                    @for (t of timeOptions; track t) {
+                      <option [value]="t">{{ t }}</option>
+                    }
+                  </select>
+                </label>
+                <label class="sx-time-pair">
+                  <span class="sx-time-pair-label">Return time</span>
+                  <select class="sx-time-select" [(ngModel)]="search.returnTime">
+                    @for (t of timeOptions; track t) {
+                      <option [value]="t">{{ t }}</option>
+                    }
+                  </select>
+                </label>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Return Date -->
+        <div class="sx-cell">
+          <button type="button" class="sx-field"
+                  [class.active]="isOpen('return')"
+                  (click)="toggleField('return'); $event.stopPropagation()">
+            <span class="sx-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </span>
+            <span class="sx-cell-text">
+              <span class="sx-cell-label">Return</span>
+              <span class="sx-cell-value">{{ formatDateLabel(search.returnDate) }} <span class="sx-cell-time">· {{ search.returnTime }}</span></span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Search CTA -->
+        <button type="button" class="sx-cta" (click)="submitSearch()">
+          <span>Search</span>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      @if (searchError()) {
+        <div class="sx-error">{{ searchError() }}</div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     FIND YOUR LOCATION — interactive Leaflet map + nearest list
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<section id="find-your-location" class="loc-finder">
+  <div class="container">
+    <div class="loc-header">
+      <span class="section-tagline">Find Your Drive</span>
+      <h2 class="section-title">Choose your pickup point in İzmir</h2>
+      <p class="section-subtitle">
+        Type any İzmir address to see your nearest pickup options — or click a pin
+        on the map directly.
+      </p>
+    </div>
+
+    <div class="loc-shell">
+      <!-- Sidebar: search + nearest list -->
+      <aside class="loc-side">
+        <div class="loc-search">
+          <div class="loc-search-row">
+            <div class="loc-input-wrap">
+              <input type="text"
+                     class="loc-input"
+                     placeholder="Type your address (e.g. Aksoy, Alsancak)"
+                     [ngModel]="addressQuery()"
+                     (ngModelChange)="onAddressInput($event)"
+                     (focus)="showSuggestionsIfAny()"
+                     (blur)="hideSuggestionsSoon()"
+                     (keyup.enter)="geocodeAddress()"
+                     autocomplete="off">
+
+              @if (showSuggestions()) {
+                <div class="loc-suggest" (mousedown)="$event.preventDefault()">
+                  @if (suggestionsLoading()) {
+                    <div class="loc-suggest-loading">
+                      <span class="loc-spin loc-spin--gold"></span>
+                      Searching İzmir…
+                    </div>
+                  } @else if (addressSuggestions().length === 0) {
+                    <div class="loc-suggest-empty">No matches yet — try a longer query.</div>
+                  } @else {
+                    @for (s of addressSuggestions(); track s.display) {
+                      <button type="button" class="loc-suggest-item"
+                              (click)="pickSuggestion(s)">
+                        <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+                          <path d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13z" stroke="currentColor" stroke-width="1.5"/>
+                          <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span class="loc-suggest-text">
+                          <span class="loc-suggest-short">{{ s.short }}</span>
+                          <span class="loc-suggest-full">{{ s.display }}</span>
+                        </span>
+                      </button>
+                    }
+                  }
+                </div>
+              }
+            </div>
+            <button type="button" class="loc-input-btn"
+                    [disabled]="geocoding()"
+                    (click)="geocodeAddress()">
+              @if (geocoding()) {
+                <span class="loc-spin"></span>
+              } @else {
+                Find
+              }
+            </button>
+          </div>
+          <button type="button" class="loc-geo" (click)="useMyLocation()">
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Use my current location
+          </button>
+          @if (geocodeError()) {
+            <div class="loc-error">{{ geocodeError() }}</div>
+          }
+          @if (userPoint(); as pt) {
+            <div class="loc-from">
+              <span class="loc-from-label">From</span>
+              <span class="loc-from-value">{{ pt.label }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="loc-list-head">
+          {{ userPoint() ? 'Nearest pickup points' : 'All pickup points · İzmir' }}
+        </div>
+
+        <ul class="loc-list">
+          @for (loc of nearestLocations(); track loc.id) {
+            <li class="loc-item"
+                [class.selected]="search.pickupLocation === loc.id"
+                (click)="selectLocation('pickupLocation', loc.id)">
+              <div class="loc-item-pin">
+                <span class="loc-item-num">{{ $index + 1 }}</span>
+              </div>
+              <div class="loc-item-body">
+                <span class="loc-item-name">{{ loc.name }}</span>
+                <span class="loc-item-addr">{{ loc.address }}</span>
+              </div>
+              <div class="loc-item-side">
+                @if (loc.distanceKm != null) {
+                  <span class="loc-item-dist">{{ loc.distanceKm < 1 ? (loc.distanceKm * 1000 | number:'1.0-0') + ' m' : (loc.distanceKm | number:'1.1-1') + ' km' }}</span>
+                }
+                <span class="loc-item-type">{{ loc.type | titlecase }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      </aside>
+
+      <!-- Interactive Map -->
+      <div class="loc-map-wrap">
+        <div #mapEl class="loc-map"></div>
+        <div class="loc-map-overlay">
+          <span class="loc-map-tag">İzmir · Aegean Coast</span>
+          <span class="loc-map-sub">Click any pin to choose pickup</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bridge — selected location → fleet -->
+    <div class="loc-confirm">
+      <div class="loc-confirm-info">
+        <span class="loc-confirm-tag">Pickup confirmed</span>
+        <span class="loc-confirm-name">{{ locationName(search.pickupLocation) }}</span>
+      </div>
+      <div class="loc-confirm-actions">
+        <button type="button" class="loc-confirm-btn loc-confirm-btn--ghost" (click)="scrollToSearch()">
+          Pick dates & time
+          <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+            <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button type="button" class="loc-confirm-btn loc-confirm-btn--gold" (click)="quickSearch()">
+          Search Available Vehicles
+          <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Fleet browsing — same section, different lens -->
+    <div class="fleet-block">
+      <div class="fleet-head">
+        <div>
+          <span class="section-tagline">Available Fleet</span>
+          <h3 class="fleet-title">
+            Vehicles from <span class="fleet-title-loc">{{ locationName(search.pickupLocation) }}</span>
+          </h3>
+        </div>
+        <div class="category-tabs category-tabs--inline">
+          @for (cat of categories(); track cat) {
+            <button type="button" class="category-tab"
+                    [class.active]="activeCategory() === cat"
+                    (click)="setCategory(cat)">
+              {{ cat === 'all' ? 'All' : (cat | titlecase) }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="featured-grid">
+        @for (vehicle of filteredVehicles(); track vehicle.id) {
+          <app-vehicle-card
+            [vehicle]="vehicle"
+            [showCompare]="false"
+            (viewDetails)="openModal($event)"
+          />
+        } @empty {
+          <p class="empty-state">No vehicles in this category right now.</p>
+        }
+      </div>
+
+      @if (selectedVehicle(); as vehicle) {
+        <app-vehicle-detail-modal [vehicle]="vehicle" (close)="closeModal()" />
+      }
+
+      <div class="section-cta">
+        <a routerLink="/collection" class="btn btn-outline">
+          View Full Collection
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -72,62 +499,22 @@
   </div>
 </section>
 
-<!-- Featured Collection Section -->
-<section class="featured-section">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-tagline">Curated Selection</span>
-      <h2 class="section-title">Featured Collection</h2>
-      <p class="section-subtitle">
-        Handpicked excellence from the world's most prestigious automotive houses.
-      </p>
-    </div>
-    
-    <div class="featured-grid">
-      @for (vehicle of featuredVehicles(); track vehicle.id) {
-        <app-vehicle-card 
-          [vehicle]="vehicle"
-          [showCompare]="false"
-          (viewDetails)="openModal($event)"
-        />
-      }
-    </div>
-
-    <!-- ✅ Modal - selectedVehicle dolunca açılır -->
-    @if (selectedVehicle(); as vehicle) {
-      <app-vehicle-detail-modal
-        [vehicle]="vehicle"
-        (close)="closeModal()"
-      />
-    }
-    
-    <div class="section-cta">
-      <a routerLink="/collection" class="btn btn-outline">
-        View Full Collection
-        <svg viewBox="0 0 24 24" fill="none">
-          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </a>
-    </div>
-  </div>
-</section>
-
 <!-- Services Preview Section -->
 <section class="services-preview">
   <div class="services-background">
     <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&q=80&w=1920" alt="">
     <div class="services-overlay"></div>
   </div>
-  
+
   <div class="container">
     <div class="services-content">
       <span class="section-tagline">Premium Services</span>
       <h2 class="section-title">Beyond Transportation</h2>
       <p class="services-description">
-        From professional chauffeur services to bespoke event solutions, 
+        From professional chauffeur services to bespoke event solutions,
         we deliver experiences that transcend the ordinary.
       </p>
-      
+
       <div class="services-features">
         <div class="feature-item">
           <div class="feature-icon">
@@ -139,7 +526,7 @@
           <h4>Professional Chauffeurs</h4>
           <p>Discrete, experienced drivers committed to your comfort and safety.</p>
         </div>
-        
+
         <div class="feature-item">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24" fill="none">
@@ -150,7 +537,7 @@
           <h4>Corporate Solutions</h4>
           <p>Tailored fleet management for businesses that demand excellence.</p>
         </div>
-        
+
         <div class="feature-item">
           <div class="feature-icon">
             <svg viewBox="0 0 24 24" fill="none">
@@ -161,10 +548,8 @@
           <p>Make your milestone moments truly unforgettable.</p>
         </div>
       </div>
-      
-      <a routerLink="/services" class="btn btn-primary">
-        Explore Services
-      </a>
+
+      <a routerLink="/services" class="btn btn-primary">Explore Services</a>
     </div>
   </div>
 </section>
@@ -177,12 +562,12 @@
         <path d="M3 21C3 21 4.5 17 4.5 14C4.5 11 3 10 3 10C3 10 6 10 6 7C6 4 3 3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         <path d="M13 21C13 21 14.5 17 14.5 14C14.5 11 13 10 13 10C13 10 16 10 16 7C16 4 13 3 13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      
+
       <blockquote class="testimonial-quote">
-        The level of service and attention to detail is unmatched. Corporate Elite 
+        The level of service and attention to detail is unmatched. Corporate Elite
         has redefined what luxury transportation means to us.
       </blockquote>
-      
+
       <div class="testimonial-author">
         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop" alt="James Wellington">
         <div>
@@ -200,14 +585,12 @@
     <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&q=80&w=1920" alt="">
     <div class="cta-overlay"></div>
   </div>
-  
+
   <div class="container">
     <div class="cta-content">
       <span class="section-tagline">Ready to Experience Excellence?</span>
       <h2 class="cta-title">Begin Your Journey</h2>
-      <p class="cta-subtitle">
-        Reserve your luxury vehicle today and discover a new standard of travel.
-      </p>
+      <p class="cta-subtitle">Reserve your luxury vehicle today and discover a new standard of travel.</p>
       <a routerLink="/booking" class="btn btn-primary btn-large">
         Book Your Experience
         <svg viewBox="0 0 24 24" fill="none">

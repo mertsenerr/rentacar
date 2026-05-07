@@ -24,9 +24,8 @@
       transform: translateY(0);
     }
 
-    .btn-details {
-      background: var(--ce-gold);
-      color: var(--ce-obsidian);
+    .btn-reserve svg {
+      transform: translateX(3px);
     }
   }
 
@@ -325,7 +324,14 @@
   }
 }
 
-.btn-details {
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.btn-details,
+.btn-reserve {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -334,21 +340,36 @@
   font-weight: var(--fw-medium);
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--ce-gold);
-  background: transparent;
-  border: 1px solid var(--ce-gold);
   border-radius: var(--radius-sm);
   transition: all var(--transition-base);
+  cursor: pointer;
 
   svg {
     width: 14px;
     height: 14px;
     transition: transform var(--transition-base);
   }
+}
+
+.btn-details {
+  color: var(--ce-platinum);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
   &:hover {
-    background: var(--ce-gold);
-    color: var(--ce-obsidian);
+    color: var(--ce-white);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.btn-reserve {
+  color: var(--ce-obsidian);
+  background: var(--ce-gold);
+  border: 1px solid var(--ce-gold);
+
+  &:hover {
+    background: transparent;
+    color: var(--ce-gold);
 
     svg {
       transform: translateX(3px);

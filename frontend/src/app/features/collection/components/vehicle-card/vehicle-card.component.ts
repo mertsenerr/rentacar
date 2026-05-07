@@ -123,13 +123,20 @@
               <span class="amount">{{ vehicle.price | number }}</span>
               <span class="period">/{{ vehicle.priceUnit }}</span>
             </div>
-            
-            <a [routerLink]="['/collection', vehicle.id]" class="btn-details">
-              View Details
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </a>
+
+            <div class="card-actions">
+              <a [routerLink]="['/collection', vehicle.id]" class="btn-details">
+                View Details
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </a>
+              @if (showReserve) {
+                <a [routerLink]="['/booking', vehicle.id]" class="btn-reserve">
+                  Reserve
+                </a>
+              }
+            </div>
           </div>
         </div>
       </article>
@@ -139,6 +146,7 @@
   export class VehicleCardComponent {
     @Input({ required: true }) vehicle!: Vehicle;
     @Input() showCompare = true;
+    @Input() showReserve = false;
     @Output() viewDetails = new EventEmitter<Vehicle>();
 
     private readonly vehicleService = inject(VehicleService);

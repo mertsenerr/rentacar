@@ -107,34 +107,12 @@ public class VehicleService : IVehicleService
         var allBookings = await _bookingRepo.GetAllAsync();
         var today = DateTime.UtcNow.Date;
 
-        // ===== DIAGNOSTIC LOGGING =====
-        Console.WriteLine($"[AVAIL-DEBUG] pickupDate={pickupDate:O} (Kind={pickupDate.Kind}), returnDate={returnDate:O} (Kind={returnDate.Kind})");
-        Console.WriteLine($"[AVAIL-DEBUG] Total bookings from DB: {allBookings.Count}");
-        foreach (var b in allBookings)
-        {
-            Console.WriteLine($"[AVAIL-DEBUG]   Booking: Id={b.Id}, VehicleId='{b.VehicleId}', Status='{b.Status}', Pickup={b.PickupDate:O} (Kind={b.PickupDate.Kind}), Return={b.ReturnDate:O} (Kind={b.ReturnDate.Kind})");
-        }
-        Console.WriteLine($"[AVAIL-DEBUG] Total vehicles: {vehicles.Count}");
-        // ===== END DIAGNOSTIC LOGGING =====
-
         return vehicles.Select(v =>
         {
             var dynamicStatus = ComputeDynamicStatus(v.Id, allBookings, today);
             var dto = MapToDto(v, dynamicStatus);
 
             var vehicleBookings = allBookings.Where(b => b.VehicleId == v.Id && b.Status != "cancelled").ToList();
-
-            // ===== DIAGNOSTIC LOGGING FOR MAYBACH =====
-            if (v.Id.Contains("maybach", StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine($"[AVAIL-DEBUG] Vehicle '{v.Id}': matched {vehicleBookings.Count} bookings after VehicleId+Status filter");
-                foreach (var vb in vehicleBookings)
-                {
-                    var cond1 = pickupDate < vb.ReturnDate;
-                    var cond2 = returnDate > vb.PickupDate;
-                    Console.WriteLine($"[AVAIL-DEBUG]   Booking {vb.Id}: pickupDate({pickupDate:O}) < ReturnDate({vb.ReturnDate:O}) = {cond1}, returnDate({returnDate:O}) > PickupDate({vb.PickupDate:O}) = {cond2}, overlap={cond1 && cond2}");
-                }
-            }
 
             var hasConflict = vehicleBookings.Any(b =>
                     pickupDate < b.ReturnDate && returnDate > b.PickupDate
@@ -456,8 +434,8 @@ public class BookingService : IBookingService
         var vehicle = await _vehicleRepo.GetByIdAsync(request.VehicleId);
         if (vehicle == null) throw new Exception("Vehicle not found");
 
-        var pickupDate = DateTime.SpecifyKind(DateTime.Parse(request.PickupDate), DateTimeKind.Utc);
-        var returnDate = DateTime.SpecifyKind(DateTime.Parse(request.ReturnDate), DateTimeKind.Utc);
+        var pickupDate = CombineDateTime(request.PickupDate, request.PickupTime);
+        var returnDate = CombineDateTime(request.ReturnDate, request.ReturnTime);
 
         // Check for date overlap with existing confirmed bookings
         var isAvailable = await CheckAvailabilityAsync(request.VehicleId, pickupDate, returnDate);
@@ -527,6 +505,14 @@ public class BookingService : IBookingService
         }
 
         return MapToDto(booking);
+    }
+
+    private static DateTime CombineDateTime(string date, string? time)
+    {
+        var datePart = DateTime.Parse(date);
+        if (!string.IsNullOrWhiteSpace(time) && TimeSpan.TryParse(time, out var ts))
+            datePart = datePart.Date.Add(ts);
+        return DateTime.SpecifyKind(datePart, DateTimeKind.Utc);
     }
 
     public async Task<bool> CheckAvailabilityAsync(string vehicleId, DateTime startDate, DateTime endDate)

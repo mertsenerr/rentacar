@@ -33,6 +33,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddHttpClient<EmailService>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 

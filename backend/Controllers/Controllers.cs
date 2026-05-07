@@ -76,10 +76,12 @@ public class VehiclesController : ControllerBase
         return Ok(new ApiResponse<IEnumerable<ReviewDto>>(true, reviews, null, null, null));
     }
 
+    [Authorize]
     [HttpPost("{id}/reviews")]
     public async Task<ActionResult<ApiResponse<ReviewDto>>> AddReview(string id, [FromBody] ReviewRequest request)
     {
-        var userId = "test-user-123";
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
         var review = await _vehicleService.AddReviewAsync(id, userId, request);
         return Ok(new ApiResponse<ReviewDto>(true, review, null, null, null));
     }

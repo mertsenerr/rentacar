@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { VehicleService } from '@core/services/vehicle.service';
 import { AuthService } from '@core/services/auth.service';
 import { Vehicle } from '@core/models';
+import { environment } from '@environments/environment';
 
 interface VehicleAvailabilityItem {
   vehicle: Vehicle;
@@ -516,8 +517,8 @@ export class BookingComponent implements OnInit {
     pickupTime: '',
     returnDate: '',
     returnTime: '',
-    pickupLocation: 'loc1',
-    returnLocation: 'loc1',
+    pickupLocation: 'izm-adb',
+    returnLocation: 'izm-adb',
     chauffeur: false,
     specialRequests: ''
   };
@@ -666,6 +667,14 @@ export class BookingComponent implements OnInit {
     if (vehicleId) {
       this.vehicleService.getVehicleById(vehicleId).subscribe(v => this.selectedVehicle.set(v));
     }
+
+    const q = this.route.snapshot.queryParamMap;
+    if (q.get('pickupDate')) this.booking.pickupDate = q.get('pickupDate')!;
+    if (q.get('pickupTime')) this.booking.pickupTime = q.get('pickupTime')!;
+    if (q.get('returnDate')) this.booking.returnDate = q.get('returnDate')!;
+    if (q.get('returnTime')) this.booking.returnTime = q.get('returnTime')!;
+    if (q.get('pickupLocation')) this.booking.pickupLocation = q.get('pickupLocation')!;
+    if (q.get('returnLocation')) this.booking.returnLocation = q.get('returnLocation')!;
   }
 
   private loadBrowseVehicles(): void {
@@ -680,7 +689,7 @@ export class BookingComponent implements OnInit {
       .set('pickupDate', this.booking.pickupDate)
       .set('returnDate', this.booking.returnDate);
 
-    this.http.get<any>('http://localhost:5000/api/vehicles/availability', { params }).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/vehicles/availability`, { params }).subscribe({
       next: (res) => {
         const items: VehicleAvailabilityItem[] = (res.data || []).map((d: any) => ({
           vehicle: d.vehicle,
@@ -727,7 +736,7 @@ export class BookingComponent implements OnInit {
       endDate: this.booking.returnDate
     };
 
-    this.http.post<any>('http://localhost:5000/api/bookings/availability', availabilityPayload, { headers }).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings/availability`, availabilityPayload, { headers }).subscribe({
       next: (res) => {
         if (!res.data?.available) {
           this.submitting.set(false);
@@ -757,7 +766,7 @@ export class BookingComponent implements OnInit {
       specialRequests: this.booking.specialRequests
     };
 
-    this.http.post<any>('http://localhost:5000/api/bookings', payload, { headers }).subscribe({
+    this.http.post<any>(`${environment.apiUrl}/bookings`, payload, { headers }).subscribe({
       next: (res) => {
         this.submitting.set(false);
         this.confirmationCode.set(res.data?.confirmationCode || 'CE-CONFIRMED');
