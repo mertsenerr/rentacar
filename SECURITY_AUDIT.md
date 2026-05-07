@@ -3,7 +3,7 @@
 > Generated: 2026-05-07
 > Stack: .NET 9 Web API + Angular 19 + MongoDB Atlas
 > Hosting: Render (backend) + Cloudflare Pages (frontend)
-> Status: **Faz 0 (Envanter) tamamlandı.** Faz 1+ pending.
+> Status: **Faz 0 + 1.1 tamamlandı.** Faz 1.2+ pending.
 
 ---
 
@@ -202,6 +202,81 @@ Bu ön-bakış sırasında belirgin şekilde dikkatimi çeken konular — detayl
 - ✓ Vulnerable package taraması yapıldı (1 backend transitive HIGH + 6 frontend devDep HIGH).
 - ✓ Hardcoded secret yok, git history temiz.
 - ✓ 14 ön-bulgu listelendi, fazlara mapping yapıldı.
-- ⏭ Sonraki adım: **Faz 1.1 — Secret Sızıntı Taraması** (detaylı pattern scan).
 
-Henüz **hiçbir kod değişikliği yapılmadı.** Tüm önerilen düzeltmeler ilgili fazlarda gözden geçirilip uygulanacak.
+---
+
+## 9. Faz 1.1 — Secret Sızıntı Taraması
+
+### 9.1 Pattern-based scan
+
+Backend ve frontend'de aşağıdaki pattern'lar tarandı; **hiçbir hardcoded secret bulunmadı**:
+
+| Pattern | Backend | Frontend | Sonuç |
+| --- | --- | --- | --- |
+| `(api[_-]?key\|secret\|password\|token\|bearer)\s*[=:]\s*"[^"]{8,}"` | 0 hit | 0 hit | ✓ |
+| `[A-Za-z0-9+/]{40,}={0,2}` (base64 40+) | 0 hit | 0 hit | ✓ |
+| `eyJ...\....\....` (JWT format) | 0 hit | 0 hit | ✓ |
+| `sk_live_`, `sk_test_`, `re_live_`, Stripe/Resend keys | 0 hit | 0 hit | ✓ |
+| `GOCSPX-` (Google client_secret) | 0 hit | 0 hit | ✓ |
+| `AKIA[A-Z0-9]{16}` (AWS) | 0 hit | 0 hit | ✓ |
+| `ghp_`, `github_pat_` | 0 hit | 0 hit | ✓ |
+| `xoxb-`, `xoxp-` (Slack) | 0 hit | 0 hit | ✓ |
+| `mongodb(\+srv)?://` (connection string) | sadece `appsettings.Development.example.json` (localhost example) + DEV.md/README.md (doc örnekler) | — | ✓ |
+
+### 9.2 appsettings.json (committed) — değer kontrolü
+
+```json
+{
+  "MongoDbSettings": { "ConnectionString": "", "DatabaseName": "rentacar" },
+  "JwtSettings":     { "Secret": "", "Issuer": "...", "Audience": "...", "ExpirationInMinutes": 60 },
+  "Resend":          { "ApiToken": "", "FromEmail": "...", "FromName": "..." }
+}
+```
+
+Tüm hassas alanlar boş string. Render env vars üzerinden override ediliyor. ✓
+
+### 9.3 environment.ts / environment.prod.ts
+
+```ts
+// environment.ts (development)
+{ apiUrl: 'http://localhost:5000/api', googleClientId: '968843541128-29...' }
+
+// environment.prod.ts (production)
+{ apiUrl: 'https://rentacar-303y.onrender.com/api', googleClientId: '968843541128-29...' }
+```
+
+`apiUrl` ve `googleClientId` **public** veriler (OAuth client ID by design frontend'de durur, Authorized JavaScript Origins ile korunur — bkz. mevcut Google Cloud Console konfigürasyonu). ✓
+
+### 9.4 Tracked files audit
+
+```
+$ git ls-files | grep -iE "package-lock|secret|\.env|appsettings\.(Development|Production)\.json$"
+(empty)
+```
+
+`appsettings.Development.json`, `package-lock.json`, `.env*`, `secrets.json` **hiçbiri tracked değil**. .gitignore çalışıyor. ✓
+
+### 9.5 Git history scan
+
+```
+$ git log --all -p | grep -iE "^\+.*(secret|password|token|api_key)\s*[=:]" | filter
+```
+
+Filtrelenen sonuçlar: SECURITY_AUDIT.md kendi içeriği (false positive), kod içindeki variable isimleri (`var token = ...`), Angular framework DI token referansları. **Gerçek secret yok.** ✓
+
+### 9.6 Bulgular
+
+| # | Bulgu | Önem | Aksiyon (Faz) |
+| --- | --- | --- | --- |
+| 15 | Google OAuth Client ID 4 dosyada hardcoded (`environment.ts`, `environment.prod.ts`, `login.component.ts:331,364`, `register.component.ts:353`). environment.ts'te tanımlı ama componentlerde tekrar duplicate. | LOW (public veri) — kod kalitesi | Faz 1.2 (refactor: componentler `environment.googleClientId` kullansın) |
+| 16 | `Mongo connection string` boş ise Program.cs'de fail-fast guard yok (sadece JWT secret için var). | MEDIUM | Faz 1.2 |
+| 17 | `Resend ApiToken` boş ise mail gönderme silently fail eder mi? Email service incelenecek. | LOW | Faz 1.2 |
+| 18 | `appsettings.json` sensitive field'lar boş string — fail-fast var ama placeholder yorum/uyarı yok. Yeni bir geliştirici dosyaya gerçek değer yazıp commit'leyebilir. | INFO | Faz 1.2 |
+
+### 9.7 Faz 1.1 Sonuç
+
+- ✓ **Kritik leak yok.** Hardcoded secret veya commit'lenmiş hassas değer bulunamadı.
+- ✓ Git history temiz.
+- ✓ .gitignore yeterli kapsama sahip.
+- ✓ Tracked file listesi temiz.
+- ⏭ Sonraki adım: **Faz 1.2 — Environment Variable Migration** (kod değişikliği gerektirir; Mongo fail-fast guard, googleClientId refactor, env var dokümentasyonu).
