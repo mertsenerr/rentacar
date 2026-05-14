@@ -135,8 +135,7 @@
             <div class="price-amount"><span class="currency">$</span><span class="amount">{{ vehicle.price | number }}</span><span class="period">/{{ vehicle.priceUnit }}</span></div>
           </div>
           <div class="footer-actions">
-            <a [routerLink]="['/collection', vehicle.id]" class="btn btn-outline" (click)="close.emit()">Full Details</a>
-            <a routerLink="/" class="btn btn-primary" (click)="close.emit()">Book Now</a>
+            <a [routerLink]="['/collection', vehicle.id]" class="btn btn-primary" (click)="close.emit()">Full Details</a>
           </div>
         </div>
       </div>

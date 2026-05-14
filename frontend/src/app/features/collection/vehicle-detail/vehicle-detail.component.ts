@@ -55,7 +55,6 @@ import { Vehicle } from '@core/models';
                   <div class="stars">@for (s of [1,2,3,4,5]; track s) { <span [class.filled]="s <= v.averageRating">★</span> }</div>
                   <span>{{ v.averageRating }} ({{ v.totalReviews }} reviews)</span>
                 </div>
-                <a routerLink="/" class="btn btn-primary btn-full">Book Now</a>
                 <div class="terms">
                   <p><strong>Min. Age:</strong> {{ v.rentalTerms.minimumAge }} years</p>
                   <p><strong>Deposit:</strong> {{ v.rentalTerms.securityDeposit | currency }}</p>

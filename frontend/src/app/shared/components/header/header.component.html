@@ -107,14 +107,6 @@
         </a>
       }
 
-      <!-- Book Now CTA -->
-      <a routerLink="/" class="btn-book" (click)="closeMegaMenu()">
-        <span class="btn-text">Book Now</span>
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-
       <!-- Mobile Menu Toggle -->
       <button class="mobile-toggle hide-desktop" (click)="toggleMobileMenu()">
         <span class="hamburger" [class.active]="mobileMenuOpen()">
@@ -309,9 +301,6 @@
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                       </svg>
                     </a>
-                    <a routerLink="/" class="preview-link secondary" (click)="closeMegaMenu()">
-                      Quick Book
-                    </a>
                   </div>
                 </div>
               </div>
@@ -347,9 +336,6 @@
                       <svg viewBox="0 0 24 24" fill="none">
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                       </svg>
-                    </a>
-                    <a routerLink="/" class="preview-link secondary" (click)="closeMegaMenu()">
-                      Book Now
                     </a>
                   </div>
                 </div>
