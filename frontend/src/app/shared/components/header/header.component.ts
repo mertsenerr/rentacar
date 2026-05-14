@@ -594,23 +594,59 @@ export class HeaderComponent implements OnInit, OnDestroy {
   getVehiclePreview(brand: VehicleBrand, model: VehicleModel): VehiclePreview {
     const vehicleData: { [key: string]: { image: string; video?: string } } = {
       'mb-s-class': {
-        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200',
+        image: 'https://images.unsplash.com/photo-1619221496652-7ee3d7406203?auto=format&fit=crop&q=80&w=1200',
         video: 'https://cdn.coverr.co/videos/coverr-luxury-sedan-driving-6819/1080p.mp4'
       },
       'mb-maybach': {
-        image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1702543180823-9722d8f76cc3?auto=format&fit=crop&q=80&w=1200'
       },
       'mb-g-class': {
-        image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1648413653819-7c0fd93e8e6a?auto=format&fit=crop&q=80&w=1200'
+      },
+      'mb-eqs': {
+        image: 'https://images.unsplash.com/photo-1672644087841-7c28b3e501ee?auto=format&fit=crop&q=80&w=1200'
+      },
+      'mb-amg-gt': {
+        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=1200'
       },
       'bmw-7series': {
-        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1516610540415-d1b25463c7f3?auto=format&fit=crop&q=80&w=1200'
       },
       'bmw-i7': {
-        image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1739545884078-9cb18fd7fa33?auto=format&fit=crop&q=80&w=1200'
+      },
+      'bmw-x7': {
+        image: 'https://images.unsplash.com/photo-1701985470695-e430a8fdc8d6?auto=format&fit=crop&q=80&w=1200'
+      },
+      'bmw-m8': {
+        image: 'https://images.unsplash.com/flagged/photo-1553505192-acca7d4509be?auto=format&fit=crop&q=80&w=1200'
+      },
+      'bmw-x5': {
+        image: 'https://images.unsplash.com/photo-1635089917414-6da790da8479?auto=format&fit=crop&q=80&w=1200'
+      },
+      'bmw-5series': {
+        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=1200'
       },
       'rr-ghost': {
-        image: 'https://images.unsplash.com/photo-1563720360172-67b8f3dce741?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1696233016084-30c8345d85ff?auto=format&fit=crop&q=80&w=1200'
+      },
+      'bentley-continental': {
+        image: 'https://images.unsplash.com/photo-1471289549423-04adaecfa1f1?auto=format&fit=crop&q=80&w=1200'
+      },
+      'porsche-911': {
+        image: 'https://images.unsplash.com/photo-1698131789135-9328c3e5644a?auto=format&fit=crop&q=80&w=1200'
+      },
+      'audi-rs7': {
+        image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&q=80&w=1200'
+      },
+      'lambo-huracan': {
+        image: 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&q=80&w=1200'
+      },
+      'ferrari-sf90': {
+        image: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=1200'
+      },
+      'rr-autobiography': {
+        image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1200'
       }
     };
 
