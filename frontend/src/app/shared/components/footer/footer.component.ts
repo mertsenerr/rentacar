@@ -72,7 +72,6 @@ import { RouterModule } from '@angular/router';
                 <li><a routerLink="/collection">Collection</a></li>
                 <li><a routerLink="/services">Services</a></li>
                 <li><a routerLink="/contact">Contact</a></li>
-                <li><a routerLink="/booking">Book Now</a></li>
               </ul>
             </div>
 

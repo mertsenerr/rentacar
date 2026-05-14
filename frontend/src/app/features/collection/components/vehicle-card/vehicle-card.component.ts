@@ -132,7 +132,7 @@
                 </svg>
               </a>
               @if (showReserve) {
-                <a [routerLink]="['/booking', vehicle.id]" class="btn-reserve">
+                <a routerLink="/" class="btn-reserve">
                   Reserve
                 </a>
               }

@@ -154,17 +154,8 @@ export class SearchComponent implements OnInit {
     });
   }
 
-  reserve(vehicleId: string): void {
-    this.router.navigate(['/booking', vehicleId], {
-      queryParams: {
-        pickupDate: this.pickupDate(),
-        pickupTime: this.pickupTime(),
-        returnDate: this.returnDate(),
-        returnTime: this.returnTime(),
-        pickupLocation: this.pickupLocation(),
-        returnLocation: this.returnLocation()
-      }
-    });
+  reserve(_vehicleId: string): void {
+    this.router.navigate(['/']);
   }
 
   formatRange(): string {

@@ -39,16 +39,6 @@ export const routes: Routes = [
     data: { animation: 'ComparisonPage' }
   },
   {
-    path: 'booking',
-    loadComponent: () => import('./features/booking/booking.component').then(m => m.BookingComponent),
-    data: { animation: 'BookingPage' }
-  },
-  {
-    path: 'booking/:vehicleId',
-    loadComponent: () => import('./features/booking/booking.component').then(m => m.BookingComponent),
-    data: { animation: 'BookingPage' }
-  },
-  {
     path: 'auth',
     children: [
       {
