@@ -628,7 +628,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=1200'
       },
       'rr-ghost': {
-        image: 'https://images.unsplash.com/photo-1696233016084-30c8345d85ff?auto=format&fit=crop&q=80&w=1200'
+        image: 'https://images.unsplash.com/photo-1740098160485-d098fbf42814?auto=format&fit=crop&q=80&w=1200'
       },
       'bentley-continental': {
         image: 'https://images.unsplash.com/photo-1471289549423-04adaecfa1f1?auto=format&fit=crop&q=80&w=1200'
